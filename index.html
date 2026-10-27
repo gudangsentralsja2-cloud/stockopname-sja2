@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STOCKOPNAME-SJA2 GUDANG SENTRAL SJA2</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f2f6f4;--panel:#fff;--ink:#18332b;--muted:#667b73;--green:#147d57;--line:#dce7e1}*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 system-ui,sans-serif;color:var(--ink)}header{background:linear-gradient(125deg,#0b513b,#16805a);color:white;padding:22px}header h1{margin:0;font-size:clamp(22px,3vw,32px)}header p{margin:6px 0 0;color:#d8f0e4}main{padding:18px;max-width:1500px;margin:auto}.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.actions{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:8px;padding:10px 13px;background:var(--green);color:white;font-weight:650;cursor:pointer}button.alt{background:#e8f3ed;color:#175c43;border:1px solid #cfe4d8}input{padding:10px;border:1px solid #cadbd1;border-radius:8px;font:inherit}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}.toolbar input{flex:1;min-width:200px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:65vh}table{border-collapse:collapse;background:white;min-width:100%;white-space:nowrap}th,td{border-bottom:1px solid #e8efeb;border-right:1px solid #e8efeb;padding:8px 10px;text-align:left;font-size:12px}th{position:sticky;top:0;background:#edf6f0;color:#315b49;z-index:1}.small{font-size:12px;color:var(--muted)}@media print{@page{size:A3 landscape;margin:8mm}header{background:white!important;color:black;padding:0 0 8px}header p{color:#333}main{padding:0}.no-print{display:none!important}.tablewrap{max-height:none;overflow:visible}table{white-space:normal;width:100%;table-layout:auto}th,td{font-size:6pt;padding:3px;overflow-wrap:anywhere}th{position:static}}
+
+/* Professional enterprise refresh */
+:root{--bg:#eef2f6;--panel:#ffffff;--ink:#172b3a;--muted:#647586;--green:#176b52;--line:#d8e1e8;--accent:#dcefe7}
+body{background:linear-gradient(180deg,#eaf0f5 0,#f5f7fa 260px);font-family:Inter,"Segoe UI",Roboto,system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+header{background:linear-gradient(120deg,#122b3b 0%,#174d43 58%,#1d7557 100%);padding:28px clamp(18px,4vw,48px);box-shadow:0 5px 18px rgba(17,42,55,.14);border-bottom:3px solid #7dbb9d}
+header h1{font-size:clamp(23px,3vw,34px);font-weight:750;letter-spacing:-.6px}
+header p{font-size:13px;color:#d8e8e3;max-width:900px}
+main{max-width:1680px;padding:24px clamp(12px,2vw,28px) 36px}
+.panel{border:1px solid #dbe4ea;border-radius:15px;padding:22px;margin-bottom:20px;box-shadow:0 5px 18px rgba(23,43,58,.045);background:rgba(255,255,255,.98)}
+.panel h3{font-size:16px;letter-spacing:-.15px;font-weight:750;color:#203a48;margin:0 0 14px}
+.panel p{line-height:1.65}
+.actions{gap:10px;align-items:center}
+button{background:linear-gradient(180deg,#1d7a5c,#17664e);border:1px solid #17664e;border-radius:9px;padding:11px 15px;font-size:13px;box-shadow:0 2px 4px rgba(19,76,57,.08);transition:transform .15s ease,box-shadow .15s ease,filter .15s ease}
+button:hover{filter:brightness(1.04);box-shadow:0 4px 10px rgba(19,76,57,.16);transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button.alt{background:#f0f5f3;color:#285b49;border:1px solid #d4e3dc;box-shadow:none}
+button.alt:hover{background:#e4f0ea}
+input{padding:11px 13px;border:1px solid #cbd7df;border-radius:9px;background:#fff;color:#1d3341;min-height:42px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:#278263;box-shadow:0 0 0 3px rgba(39,130,99,.12)}
+.toolbar{gap:14px;margin-bottom:16px}
+.toolbar h3{font-size:17px}
+.toolbar input{min-height:44px}
+.tablewrap{border:1px solid #dce5eb;border-radius:12px;box-shadow:inset 0 1px 0 #fff;max-height:68vh}
+table{background:#fff}
+th,td{padding:11px 12px;border-bottom:1px solid #e8edf1;border-right:1px solid #edf1f4;font-size:12px}
+th{background:#eaf3ef;color:#234e40;font-size:11px;font-weight:800;letter-spacing:.25px;text-transform:uppercase;padding-top:13px;padding-bottom:13px}
+tbody tr:nth-child(even){background:#f8fafb}
+tbody tr:hover{background:#eef7f2}tbody tr.row-selected{background:#d8f5e8!important;outline:2px solid #15956b;outline-offset:-2px}
+.small{color:#667985;font-size:12px}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.detail-item{padding:12px;border:1px solid #dce8e2;border-radius:10px;background:#f7fbf8}.detail-item b{display:block;font-size:11px;color:#64776e;margin-bottom:5px}.detail-item span{font-size:16px;font-weight:750;color:#234e40;overflow-wrap:anywhere}tbody tr{cursor:pointer}
+#count{display:inline-block;margin-top:4px;padding:3px 9px;border-radius:20px;background:#edf3f6;color:#526777;font-weight:650}
+@media(max-width:700px){header{padding:20px 16px}main{padding:12px}.panel{padding:15px;border-radius:12px}.actions button{flex:1 1 auto}#part,#loc{width:100%;min-width:0}.toolbar{align-items:stretch}.toolbar>div{width:100%}.toolbar input{min-width:0;width:100%}.tablewrap{max-height:62vh}}
+@media(max-width:700px){.scan-btn{width:auto;flex:0 0 auto;white-space:nowrap}#part,#physicalPart{flex:1 1 180px;min-width:0;width:auto}}
+.scan-btn{display:inline-flex;align-items:center;gap:8px}.scan-btn svg{width:17px;height:17px;flex:0 0 17px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}.scan-modal{position:fixed;inset:0;z-index:9999;background:rgba(10,25,20,.78);display:flex;align-items:center;justify-content:center;padding:16px}.scan-modal[hidden]{display:none}.scan-card{width:min(560px,100%);background:#fff;border-radius:16px;padding:20px;box-shadow:0 20px 70px #0005}.scan-card h3{margin:0 0 8px}.scan-card video{width:100%;max-height:55vh;object-fit:cover;background:#101b18;border-radius:12px}.scan-card .actions{margin-top:12px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+.audit-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 14px;align-items:stretch}
+.audit-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:linear-gradient(145deg,#fff,#f0f8f4);color:#203a48;border:1px solid #d5e6dd;box-shadow:none;padding:14px 16px;min-width:0}
+.audit-card span{font-size:12px;font-weight:750}.audit-card strong{font-size:27px;line-height:1.2;color:#087653}.audit-card small{font-size:11px;font-weight:500;color:#647586}
+.audit-modal{position:fixed;inset:0;z-index:99990;background:rgba(7,25,20,.65);display:flex;align-items:center;justify-content:center;padding:16px}.audit-modal[hidden]{display:none}.audit-modal-card{width:min(620px,100%);max-height:80vh;overflow:auto;background:#fff;border-radius:16px;padding:18px;box-shadow:0 20px 70px #0004}.audit-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.audit-modal-head h3{margin:0}.audit-list{display:grid;gap:7px}.audit-item{border:1px solid #e1eae5;border-radius:9px;padding:9px 11px;background:#f8fbf9;cursor:pointer}.audit-item:hover,.audit-item:focus{border-color:#087653;background:#effaf4;outline:2px solid #b7dfcc;outline-offset:1px}.audit-item strong{display:block;font-size:12px;overflow-wrap:anywhere}.audit-item span{display:block;color:#63756d;font-size:12px;overflow-wrap:anywhere}.audit-empty{padding:14px;color:#17664e;background:#effaf4;border-radius:9px}
+.audit-card.rack-empty-card strong{color:#b45309}.import-date{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #d7e4eb;border-radius:9px;background:#f7fafc;color:#526777;font-size:12px;margin-top:12px}.import-date strong{color:#203a48}.audit-card.rack-empty-card{background:linear-gradient(145deg,#fffaf0,#fff);border-color:#f0dfba}.audit-card.rack-empty-card strong{color:#b45309}@media(min-width:701px) and (max-width:1050px){.audit-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.audit-summary{grid-template-columns:1fr}.audit-card{padding:12px;min-width:0}.audit-card span,.audit-card small{overflow-wrap:anywhere}.audit-card strong{font-size:24px}}
+.quick-results{display:grid;gap:6px;margin-top:10px;max-height:230px;overflow:auto}
+.quick-result{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;background:#f7faf9;color:#203a48;border:1px solid #dce5eb;box-shadow:none;padding:10px 12px}
+.quick-result strong{font-size:13px}.quick-result span{font-size:12px;color:#647586;font-weight:400}.quick-result:hover{background:#eaf5ef;transform:none}
+#quickSearch{flex:1 1 260px;min-width:180px}
+@media(max-width:700px){#quickSearch{width:100%;min-width:0;flex-basis:100%}}
+
+/* Penyederhanaan tampilan input: kode barang tetap dipakai oleh fungsi lama,
+   tetapi tidak ditampilkan sebagai kolom input berulang. */
+#part,#physicalPart{display:none!important}
+.selected-item{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.selected-item .item-code{font-size:clamp(20px,2.4vw,28px);font-weight:800;letter-spacing:.2px;overflow-wrap:anywhere}
+.selected-item .item-desc{font-size:15px;color:#536b78;margin-top:3px}
+.selected-item .system-stock{background:#e3f6ed;color:#17664e;border:1px solid #c7ead9;border-radius:10px;padding:10px 14px;font-weight:750;white-space:nowrap}
+.opname-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.opname-grid>.panel{margin-bottom:16px}
+.opname-grid .actions{display:flex;flex-direction:column;align-items:stretch}
+.opname-grid .actions input:not([type=hidden]){width:100%;min-width:0}
+.opname-grid .actions button{width:100%;min-height:44px}
+@media(max-width:700px){.opname-grid{grid-template-columns:1fr}.selected-item .system-stock{white-space:normal}}
+
+
+/* Login lokal aplikasi (tampilan disesuaikan dengan referensi; fungsi tetap) */
+.login-gate{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 45%,#15543f 0%,#0b3d2e 72%,#082b22 100%)}
+.login-card{width:min(504px,100%);min-height:506px;padding:38px;background:#fff;border-radius:19px;box-shadow:0 24px 70px #0003;color:#172b3a;display:flex;flex-direction:column;justify-content:flex-start}
+.login-card h2{margin:0 0 10px;font-size:26px;line-height:1.3;font-weight:750;color:#173f32}.login-card p{margin:0 0 20px;color:#64716d;font-size:14px}
+.login-field{display:block;margin:12px 0 5px;font-weight:650}.login-card input{width:100%;margin-top:6px;min-height:52px;padding:13px 17px;border:1px solid #cbd9d3;border-radius:11px;font-size:16px}
+.password-wrap{display:flex;gap:9px;align-items:center}.password-wrap input{flex:1;min-width:0}.password-wrap button{white-space:nowrap;padding:10px 16px;min-height:45px;font-size:14px}
+.login-submit{width:100%;margin-top:23px;min-height:48px;border-radius:10px;font-size:15px}.login-error{min-height:20px;margin-top:12px!important;color:#b42318!important;font-weight:600}login-submit:disabled{opacity:.65;cursor:wait}
+@media(max-width:560px){.login-card{min-height:0;padding:28px 24px}.login-card h2{font-size:24px}.login-card p{font-size:12px}.login-card input{font-size:15px}}
+/* Identitas visual profesional: perubahan terbatas pada branding, ikon, dan teks status. */
+.app-brand{display:flex;align-items:center;gap:16px}.brand-mark{width:58px;height:58px;flex:0 0 58px;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))}.app-brand h1{margin:0;font-size:clamp(21px,3vw,32px);line-height:1.18}.app-brand p{margin:5px 0 0}.panel h3{display:flex;align-items:center;gap:10px}.menu-icon{width:30px;height:30px;flex:0 0 30px;display:inline-flex;align-items:center;justify-content:center;color:#12664d;background:linear-gradient(145deg,#eef9f3,#dcefe6);border:1px solid #d0e7db;border-radius:9px;box-shadow:0 2px 4px rgba(18,82,59,.08)}.menu-icon svg{width:19px;height:19px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 0 rgba(255,255,255,.8))}.button-icon{display:inline-flex;align-items:center;gap:8px}.button-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;filter:drop-shadow(0 1px 0 rgba(255,255,255,.16))}.login-brand{display:flex;align-items:center;gap:14px;margin:0 0 24px;padding-bottom:19px;border-bottom:1px solid #e5eee9}.login-brand-mark{width:58px;height:58px;flex:0 0 58px;filter:drop-shadow(0 3px 4px rgba(20,83,60,.16))}.login-brand-title{font-size:18px;font-weight:800;letter-spacing:-.3px;line-height:1.2;color:#123f32}.login-brand-subtitle{margin-top:5px;font-size:14px;font-weight:650;color:#4c7465}.login-card h2{margin-top:0}@media(max-width:560px){.app-brand{gap:11px}.brand-mark{width:46px;height:46px;flex-basis:46px}.app-brand h1{font-size:20px}.menu-icon{width:28px;height:28px;flex-basis:28px}.login-brand-mark{width:50px;height:50px;flex-basis:50px}.login-brand-title{font-size:16px}.login-brand-subtitle{font-size:13px}}
+
+/* Penyegaran visual logo dan ikon saja; tidak mengubah perilaku aplikasi. */
+.brand-mark,.login-brand-mark{filter:drop-shadow(0 4px 5px rgba(4,72,52,.25)) saturate(1.12)}
+.menu-icon{color:#08775a;background:linear-gradient(145deg,#f1fffb 0%,#d5f7e9 48%,#fff1d2 100%);border:1px solid #b8e5d3;border-radius:10px;box-shadow:0 3px 7px rgba(8,105,75,.13),inset 0 1px 0 rgba(255,255,255,.95)}
+.menu-icon svg{stroke:#08775a;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9))}
+.button-icon svg,.scan-btn svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.16))}
+
+/* Penyegaran tampilan enterprise berdasarkan sketsa: hanya CSS, tanpa mengubah logika aplikasi. */
+header{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(118deg,#082f38 0%,#075748 48%,#16805e 100%);padding:26px clamp(18px,4vw,58px);border-bottom:4px solid transparent;border-image:linear-gradient(90deg,#0ac18b,#d8b45a,#0ac18b) 1}
+header:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(135deg,transparent 0 56%,rgba(255,255,255,.045) 56% 57%,transparent 57% 68%,rgba(255,255,255,.035) 68% 69%,transparent 69%),radial-gradient(ellipse at 90% 20%,rgba(37,209,151,.18),transparent 42%)}
+.app-brand{gap:20px;position:relative;z-index:1}
+.brand-mark{width:76px;height:76px;flex-basis:76px;filter:drop-shadow(0 5px 8px rgba(0,0,0,.22)) saturate(1.22)}
+.app-brand h1{font-size:clamp(25px,3.2vw,38px);font-weight:850;letter-spacing:-.7px;text-shadow:0 1px 1px rgba(0,0,0,.12)}
+.app-brand p{margin-top:7px;font-size:clamp(16px,1.7vw,20px);font-weight:750;letter-spacing:.2px;color:#e4fff4}
+main{padding-top:26px}
+.panel{border-radius:17px;box-shadow:0 7px 24px rgba(19,48,63,.055)}
+.menu-icon{width:36px;height:36px;flex-basis:36px;border-radius:12px;color:#087b5a;background:linear-gradient(145deg,#ffffff 0%,#d7f8e9 55%,#fff0cc 100%);border:1px solid #b8e6d3;box-shadow:0 4px 10px rgba(8,105,75,.13),inset 0 1px 0 #fff}
+.menu-icon svg{width:21px;height:21px;stroke-width:2.15}
+.button-icon{gap:9px}
+.button-icon svg,.scan-btn svg{width:20px;height:20px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.16))}
+button{border-radius:11px;font-weight:750}
+button.alt{background:linear-gradient(180deg,#f7fbf9,#e9f4ef)}
+.selected-item{background:linear-gradient(110deg,#fff 0%,#f2fbf7 100%)}
+.selected-item .item-code{font-size:clamp(23px,2.5vw,31px);color:#075847}
+.selected-item .system-stock{background:linear-gradient(135deg,#e7fbf2,#d4f4e5);border-color:#bcebd5}
+.detail-item{background:linear-gradient(145deg,#fff,#f4faf7)}
+/* Login baru: komposisi dua bidang bergaya korporat, tanpa mengubah elemen/form atau proses autentikasi. */
+.login-gate{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,560px);gap:clamp(28px,5vw,84px);align-items:center;justify-content:center;padding:clamp(24px,5vw,76px);overflow:auto;background:radial-gradient(ellipse at 78% 18%,rgba(23,154,111,.26),transparent 34%),linear-gradient(125deg,#092e39 0%,#075545 55%,#087c59 100%)}
+.login-gate:before{content:"STOCKOPNAME-SJA2\A GUDANG SENTRAL SJA2\A\A Akurat  •  Terpercaya  •  Efisien";white-space:pre-line;position:relative;z-index:1;display:block;max-width:680px;color:#fff;font-size:clamp(27px,3.2vw,48px);font-weight:850;letter-spacing:-.7px;line-height:1.2;text-shadow:0 3px 18px rgba(0,0,0,.2);padding:clamp(12px,2vw,32px);border-left:5px solid #e6bd59}
+.login-gate:after{content:"";position:absolute;z-index:0;pointer-events:none;left:0;top:0;bottom:0;width:52%;opacity:.55;background:linear-gradient(145deg,transparent 0 27%,rgba(255,255,255,.07) 27% 28%,transparent 28% 41%,rgba(255,255,255,.045) 41% 42%,transparent 42%),repeating-linear-gradient(90deg,transparent 0 62px,rgba(255,255,255,.025) 63px 64px),linear-gradient(180deg,transparent 72%,rgba(0,0,0,.18))}
+.login-card{grid-column:2;position:relative;z-index:2;width:100%;min-height:0;padding:clamp(28px,3vw,42px);border:1px solid rgba(255,255,255,.85);border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.27);background:linear-gradient(155deg,#fff 0%,#fff 68%,#f2fbf7 100%)}
+.login-brand{flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid #e1eee8}
+.login-brand-mark{width:76px;height:76px;flex-basis:76px;filter:drop-shadow(0 5px 8px rgba(4,72,52,.2)) saturate(1.2)}
+.login-brand-title{font-size:clamp(20px,2vw,25px);font-weight:850;letter-spacing:-.45px;color:#083e35}
+.login-brand-subtitle{margin-top:5px;font-size:16px;font-weight:800;color:#12805d;letter-spacing:.15px}
+.login-card h2{font-size:25px;text-align:left;color:#183b3a;margin-bottom:8px}
+.login-card input{background:#fbfdff;border-color:#cfdee8}
+.login-card input:focus{border-color:#14966b;box-shadow:0 0 0 4px rgba(20,150,107,.12)}
+.password-wrap button{min-width:88px}
+.login-submit{min-height:54px;margin-top:24px;background:linear-gradient(100deg,#078a66,#087253);box-shadow:0 7px 18px rgba(6,105,76,.2);font-size:16px}
+.login-error{font-size:13px}
+@media(max-width:820px){.login-gate{display:flex;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(23,154,111,.26),transparent 42%),linear-gradient(125deg,#092e39 0%,#075545 55%,#087c59 100%)}.login-gate:before,.login-gate:after{display:none}.login-card{width:min(540px,100%);padding:28px 24px}.login-brand-mark{width:64px;height:64px;flex-basis:64px}.login-brand-title{font-size:21px}.login-brand-subtitle{font-size:15px}.brand-mark{width:58px;height:58px;flex-basis:58px}.app-brand h1{font-size:clamp(21px,4vw,30px)}.app-brand p{font-size:16px}}
+@media(max-width:560px){header{padding:18px 14px}.app-brand{gap:12px}.brand-mark{width:48px;height:48px;flex-basis:48px}.app-brand h1{font-size:19px;letter-spacing:-.3px}.app-brand p{font-size:14px;margin-top:4px}.login-card{padding:25px 20px}.login-brand-mark{width:58px;height:58px;flex-basis:58px}.login-brand-title{font-size:19px}.login-brand-subtitle{font-size:14px}}
+
+
+.stock-account-bar{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid #ffffff30;color:#fff;font-size:13px}.stock-account-bar span{overflow-wrap:anywhere;font-weight:700}.stock-account-bar button{background:#fff;color:#9b2525;border:1px solid #f0caca;box-shadow:none}@media(max-width:560px){.stock-account-bar{justify-content:space-between;font-size:12px}.stock-account-bar span{max-width:72%}}
+</style>
+<style id="minmaxResultsStyles">
+#minmaxResultsPanel{min-width:0;overflow:hidden}#minmaxResultsPanel .tablewrap{max-width:100%;width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border:1px solid var(--line,#dce5eb);border-radius:10px}#minmaxResultsPanel .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}#minmaxResultsPanel .minmax-summary{margin:14px 0}#minmaxResultsPanel .audit-card{height:100%;min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:7px}#minmaxResultsPanel .audit-card span{line-height:1.35;overflow-wrap:anywhere}#minmaxResultsPanel .audit-card small{line-height:1.4}#minmaxResultsPanel .audit-card strong{font-variant-numeric:tabular-nums}
+.minmax-results-table{min-width:1120px;width:100%;border-collapse:separate;border-spacing:0}
+.minmax-results-table th,.minmax-results-table td{padding:10px 12px;vertical-align:top;white-space:normal}
+.minmax-results-table td:first-child{white-space:nowrap}
+.mm-assumption{display:inline-block;margin-left:4px;padding:2px 6px;border-radius:6px;background:#fff1cc;color:#805300;font-size:11px;font-weight:750}
+.mm-status{display:inline-block;padding:4px 8px;border-radius:7px;font-size:11px;font-weight:800;white-space:nowrap}
+.mm-status.mm-neutral{background:#e8edf2;color:#475569;border:1px solid #cbd5e1}
+
+.mm-critical{background:#fee2e2;color:#991b1b}.mm-warning{background:#fef3c7;color:#92400e}.mm-safe{background:#dcfce7;color:#166534}
+@media(max-width:700px){#minmaxResultsPanel .toolbar{align-items:flex-start}.minmax-results-table{min-width:1000px}#minmaxResultsPanel .minmax-summary{grid-template-columns:1fr}#minmaxResultsPanel .audit-card{padding:14px}}
+</style>
+</head><body>
+<header><div class="app-brand"><svg class="brand-mark" viewBox="0 0 64 64" role="img" aria-label="Logo profesional Gudang Sentral SJA2"><defs><linearGradient id="brandPremiumshield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fffc"/><stop offset="1" stop-color="#b8f0dc"/></linearGradient><linearGradient id="brandPremiummain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22c58b"/><stop offset=".55" stop-color="#07845f"/><stop offset="1" stop-color="#064e49"/></linearGradient><linearGradient id="brandPremiumroof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4c4"/><stop offset="1" stop-color="#ffb84d"/></linearGradient></defs><path d="M32 2 59 17v30L32 62 5 47V17Z" fill="url(#brandPremiumshield)"/><path d="M32 7 53 19v25L32 56 11 44V19Z" fill="url(#brandPremiummain)"/><path d="m16 28 16-10 16 10v19H16Z" fill="#fff"/><path d="m13 28 19-12 19 12" fill="none" stroke="url(#brandPremiumroof)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 34h14v13H25z" fill="#075b4a"/><path d="M29 37h6v6h-6z" fill="#f8c45b"/><path d="M19 33h4v5h-4zM41 33h4v5h-4z" fill="#0c8a64"/><path d="M13 49h38" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="49" cy="14" r="5" fill="#ffca67" stroke="#fff" stroke-width="1.5"/></svg><div><h1>STOCKOPNAME-SJA2</h1><p>Gudang Sentral SJA2</p></div></div><div class="stock-account-bar"><button type="button" id="stockAccountIdentity" class="stock-account-trigger" aria-haspopup="dialog" aria-controls="stockAccountModal" onclick="openStockAccountMenu()">👤 Memeriksa akun… ▾</button></div></header>
+<main>
+<section class="panel no-print"><h3><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6v10H3z"/><path d="M8 20v-6h8v6M7 10h.01M12 10h.01M17 10h.01"/></svg></span>Pengelolaan Stok Barang Gudang Sentral SJA2</h3>
+<div class="actions"><button id="import"><span class="button-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 14v6h16v-6"/></svg>Impor Excel perusahaan</span></button><input id="file" type="file" accept=".xlsx,.xls,.csv" hidden><button id="export"><span class="button-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 17v4h16v-4"/></svg>Download Excel</span></button><button class="alt scan-btn" id="scanSearch" type="button" onclick="startScan('quickSearch')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 8v8M10 8v8M13 8v8M16 8v8"/></svg> Scan Barcode</button><input id="quickSearch" type="search" placeholder="Cari kode Part / nama barang…" autocomplete="off" aria-label="Cari barang untuk dipilih"><button class="alt" id="clear"><span class="button-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 14h12l1-14M9 7V4h6v3"/></svg>Hapus semua data</span></button></div>
+<div id="quickResults" class="quick-results" hidden aria-live="assertive" role="status"></div><div class="import-date no-print">🗓️ Impor data terakhir: <strong id="lastImportDate">Belum ada data impor</strong></div>
+</section>
+<section class="panel no-print selected-item" id="selectedItemPanel">
+  <div><div class="small"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8M12 13v9"/></svg></span> BARANG DIPILIH</div><div class="item-code" id="selectedPartLabel">Belum ada barang dipilih</div><div class="item-desc" id="selectedDescLabel">Cari barang melalui kolom pencarian di atas atau pilih baris pada daftar.</div></div>
+  <div class="system-stock" id="selectedStockLabel">Stok sistem: —</div>
+</section>
+<div class="opname-grid no-print">
+<section class="panel"><h3><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M3 12h18M7 12v9M17 12v9M8 8h.01M12 8h.01M16 8h.01"/><path d="M10 21v-5h4v5"/></svg></span>Koreksi Nomor Rak</h3><p class="small">Nomor rak saat ini: <strong id="currentRackLabel">Belum dipilih</strong></p><div class="actions">
+<input id="part" placeholder="Part / Kode sparepart" required><input id="loc" placeholder="Masukkan nomor rak" aria-label="Masukkan nomor rak" required><button id="saveRack">Simpan Rak</button>
+</div></section>
+<section class="panel"><h3><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8 10h8M8 14h5M8 18h3"/></svg></span>Hitung Stok Fisik</h3><p class="small">Stok fisik terakhir: <strong id="currentPhysicalLabel">Belum diinput</strong></p><div class="actions">
+<input id="physicalPart" placeholder="Part / Kode sparepart" required><input id="physicalQty" type="number" min="0" step="any" placeholder="Masukkan jumlah fisik" aria-label="Masukkan jumlah stok fisik" required><button id="savePhysical">Simpan Stok</button>
+</div></section>
+</div>
+<section class="panel" id="detailPanel" hidden><h3><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5M10.5 7v4M10.5 14h.01"/></svg></span>Periksa Detail Barang</h3><p class="small">Periksa stok sistem, stok fisik, selisih, dan lokasi rak. Pemeriksaan ini tidak mengubah stok.</p><div id="detailContent" class="detail-grid"></div><div class="actions" style="margin-top:12px"><button class="alt" type="button" onclick="document.getElementById('detailPanel').hidden=true">Tutup Pemeriksaan</button></div></section>
+<section class="panel" id="minmaxResultsPanel">
+  <div class="toolbar"><div><h3 style="margin:0"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V7M16 15V9M20 15V4"/></svg></span>Hasil Perhitungan Min-Max</h3><span class="small" id="minmaxResultsCount">Belum ada data</span></div></div>
+  <p class="small">Hasil dihitung otomatis dari data stok yang dimuat dari Supabase; tidak perlu impor ulang jika data sudah tersimpan. Lead time negatif atau tidak valid menggunakan asumsi 7 hari dan ditandai. Jika data pemakaian belum memadai, hasil tetap ditampilkan sebagai estimasi yang perlu ditinjau.</p>
+  <div id="minmaxSummary" class="audit-summary minmax-summary no-print">
+    <button type="button" class="audit-card" id="minmaxCriticalCard"><span>Stok mencapai / di bawah MIN</span><strong id="minmaxCriticalCount">0</strong><small>Perlu evaluasi pengadaan</small></button>
+    <button type="button" class="audit-card" id="minmaxReviewCard"><span>Data Min-Max perlu ditinjau</span><strong id="minmaxReviewCount">0</strong><small>Estimasi masih terbatas</small></button>
+    <button type="button" class="audit-card" id="slowMoveCard"><span>Aktivitas lama (&gt;180 hari)</span><strong id="slowMoveCount">0</strong><small>Perlu pemeriksaan pergerakan</small></button>
+  </div>
+  <div class="tablewrap"><table class="minmax-results-table"><thead><tr><th>Part</th><th>Deskripsi</th><th>Stok Tersedia</th><th>Estimasi Pemakaian/Hari</th><th>Lead Time</th><th>MIN</th><th>MAX</th><th>Saran Pengadaan</th><th>Status</th><th>Kualitas Estimasi</th></tr></thead><tbody id="minmaxResultsBody"><tr><td colspan="10" class="small">Impor Excel perusahaan untuk melihat hasil Min-Max per part.</td></tr></tbody></table></div>
+</section>
+<section class="panel"><div class="toolbar"><div><h3 style="margin:0"><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01"/></svg></span>Daftar Stok Perusahaan</h3><span class="small" id="count">0 baris</span></div></div><div id="auditSummary" class="audit-summary no-print">
+<button type="button" class="audit-card" id="missingRackCard"><span>Barang belum ada nomor rak</span><strong id="missingRackCount">0</strong><small>Ketuk untuk melihat daftar</small></button>
+<button type="button" class="audit-card" id="varianceCard"><span>Barang dengan selisih stok</span><strong id="varianceCount">0</strong><small>Ketuk untuk melihat daftar</small></button>
+<button type="button" class="audit-card rack-empty-card" id="emptyRackCard"><span>Daftar Nomor Rak Kosong (Part tidak ada di impor terbaru)</span><strong id="emptyRackCount">0</strong><small>Rak dari data sebelumnya yang Part-nya tidak ditemukan saat impor terbaru</small></button>
+</div><p class="small no-print">Min-Max adalah acuan estimasi. Pemakaian dihitung dari perubahan stok bersih antar-impor; waktu pengadaan default 7 hari bila data Move Lead Time tidak valid. Periksa rekomendasi sebelum memesan.</p><div class="tablewrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section>
+<div id="auditModal" class="audit-modal no-print" hidden role="dialog" aria-modal="true" aria-labelledby="auditModalTitle"><div class="audit-modal-card"><div class="audit-modal-head"><h3 id="auditModalTitle">Daftar barang</h3><button type="button" class="alt" id="closeAuditModal">Tutup</button></div><p class="small" id="auditModalNote"></p><div id="auditList" class="audit-list"></div></div></div>
+</main>
+<div id="scanModal" class="scan-modal" hidden role="dialog" aria-modal="true" aria-label="Pemindai barcode">
+ <div class="scan-card"><h3><span class="menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7V5h3M17 5h3v3M20 17v2h-3M7 19H4v-3M7 8v8M10 8v8M13 8v8M16 8v8"/></svg></span>Scan Barcode Part</h3><p class="small">Kamera akan memindai otomatis. Arahkan barcode atau QR code ke dalam bingkai; tidak perlu memfoto.</p><video id="scanVideo" playsinline muted autoplay></video><p id="scanStatus" class="small">Menyiapkan kamera…</p><div class="actions"><button class="alt" type="button" onclick="stopScan()">Batal / Tutup</button></div></div>
+</div>
+<script>
+const HEADERS=["Site", "Part", "Part Description", "Configuration ID", "Location No", "Lot/Batch No", "Serial No", "Condition Code", "Condition Code Description", "Revision No", "W/D/R No", "Activity Sequence", "Warehouse ID", "Bay ID", "Row ID", "Tier ID", "Bin ID", "Rotable Part Pool ID", "On Hand Qty", "On Hand Catch Qty", "Unified On Hand Qty", "Unified Catch On Hand Qty", "Reserved Qty", "Unified Reserved Qty", "In Transit Qty", "Catch Qty in Transit", "Unified Qty in Transit", "Unified Catch Qty in Transit", "Available Qty", "UoM", "Catch UoM", "Unified UoM", "Unified Catch UoM", "Frozen", "Last Activity Date", "Latest Count", "Location Type", "Receipt Date", "Availability Control", "Availability Control Description", "Avg Unit Transit Cost", "Count Variance", "Expiration Date", "Unit Cost", "Total Inventory Value", "Base Currency", "Ownership", "Owner", "Owner Name", "Part Acquisition Value", "Total Acquisition Value", "Acquisition Currency", "Program", "Program Description", "Project", "Project Description", "Sub Project", "Sub Project Description", "Activity", "Activity Description", "Structure Level", "Handling Unit ID", "Handling Unit Type", "Handling Unit Type Description", "SSCC", "Alt Handling Unit Label ID", "Top Parent Handling Unit ID", "Top Parent Handling Unit Type", "Top Parent Handling Unit Type Description", "Top Parent SSCC", "Top Parent Alt Handling Unit Label ID", "Location Description", "Remote", "Engineering Revision No", "Drawing No", "Drawing Revision No", "Type Designation", "Part Product Family", "Family Desc", "Site Area", "Move Lead Time", "Stock Aging Days", "Re-Order Point", "Order Qty", "Estimasi Pemakaian/Hari", "MIN Rekomendasi", "MAX Rekomendasi", "Saran Pengadaan", "Status Min-Max", "Keyakinan Estimasi", "Tanggal Impor Terakhir", "Stok Sebelum Impor"];
+let rows=[];
+const $=id=>document.getElementById(id), norm=s=>String(s??'').trim().toLowerCase().replace(/[\\s._-]+/g,''), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(){ rows=[]; render(); }
+const IMPORT_DATE_KEY='stockopname_sja2_last_import_date';
+let emptyRackItems=[];
+function displayImportDate(value){
+  const el=$('lastImportDate'); if(!el)return;
+  if(!value){el.textContent='Belum ada data impor';return;}
+  const d=new Date(value);
+  el.textContent=Number.isNaN(d.getTime())?String(value):d.toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function loadImportDate(){try{displayImportDate(localStorage.getItem(IMPORT_DATE_KEY))}catch(e){displayImportDate('')}}
+async function loadCloudImportDate(){
+  if(!cloudClient||!cloudUser)return;
+  const {data,error}=await cloudClient.from('stockopname_sja2_metadata').select('last_import_at,empty_racks').eq('id','shared').maybeSingle();
+  if(error){console.warn('Tanggal impor cloud belum dapat dibaca. Pastikan tabel stockopname_sja2_metadata sudah dibuat.',error.message);return;}
+  if(data?.last_import_at){try{localStorage.setItem(IMPORT_DATE_KEY,data.last_import_at)}catch(e){}displayImportDate(data.last_import_at);}
+  if(Array.isArray(data?.empty_racks)){emptyRackItems=data.empty_racks;}
+}
+async function saveEmptyRackItems(){
+  if(!cloudClient||!cloudUser)return;
+  const {error}=await cloudClient.from('stockopname_sja2_metadata').upsert({id:'shared',empty_racks:emptyRackItems,updated_by:cloudUser.id},{onConflict:'id'});
+  if(error){console.error('Daftar rak kosong gagal disinkronkan:',error.message);alert('Daftar rak kosong terdeteksi, tetapi gagal disinkronkan ke perangkat lain. Pastikan kolom empty_racks sudah dibuat melalui SQL terbaru.');}
+}
+async function saveImportDate(){
+  const now=new Date().toISOString();
+  try{localStorage.setItem(IMPORT_DATE_KEY,now)}catch(e){}
+  displayImportDate(now);
+  if(!cloudClient||!cloudUser)return;
+  const {error}=await cloudClient.from('stockopname_sja2_metadata').upsert({id:'shared',last_import_at:now,updated_by:cloudUser.id},{onConflict:'id'});
+  if(error){console.error('Tanggal impor gagal disinkronkan:',error.message);alert('Data impor diproses, tetapi tanggal impor belum tersinkron ke semua perangkat. Jalankan SQL tabel metadata yang disertakan, lalu coba impor lagi.');}
+}
+
+let cloudUser=null, cloudClient=null, saveTimer=null, saveChain=Promise.resolve();
+
+function persist(){
+  rows.sort((a,b)=>{
+    const ar=String(a['Nomor Rak']??'').trim(), br=String(b['Nomor Rak']??'').trim();
+    return (ar?1:0)-(br?1:0);
+  });
+  render();
+
+  if(!cloudUser || !cloudClient){ alert('Login terlebih dahulu. Perubahan belum disimpan ke database.'); return; }
+  if(cloudUser && cloudClient){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(()=>{
+      const snapshot=JSON.parse(JSON.stringify(rows));
+      saveChain=saveChain.then(async()=>{
+        const {error}=await cloudClient
+          .from('stockopname_sja2_data')
+          .upsert({
+            id:'shared',
+            rows:snapshot,
+            updated_at:new Date().toISOString()
+          },{onConflict:'id'});
+        if(error){
+          console.error('Gagal menyimpan ke Supabase:',error);
+          alert('Perubahan tersimpan di browser, tetapi gagal disinkronkan ke Supabase. Periksa koneksi lalu coba lagi.');
+        }
+      }).catch(err=>console.error('Kesalahan sinkronisasi:',err));
+    },500);
+  }
+}
+
+window.initCloudSync=async function(){
+  const {data:{session},error:sessionError}=await cloudClient.auth.getSession();
+  if(sessionError) throw sessionError;
+  if(!session) throw new Error('Sesi login Supabase tidak ditemukan.');
+
+  cloudUser=session.user;
+  window.cloudUser=cloudUser;
+  const stockAccountLabel=document.getElementById('stockAccountIdentity');
+  if(stockAccountLabel){
+    const meta=cloudUser.user_metadata||{};
+    const displayName=meta.full_name||meta.name||meta.username||cloudUser.email||'Akun';
+    stockAccountLabel.textContent=`👤 ${displayName} ▾`;
+    stockAccountLabel.title=cloudUser.email||displayName;
+  }
+
+  // Realtime: menerima perubahan baris milik akun yang sedang login.
+  if(window.stockRealtimeChannel){
+    try{await cloudClient.removeChannel(window.stockRealtimeChannel)}catch(e){}
+  }
+  window.stockRealtimeChannel=cloudClient
+    .channel('stockopname-sja2-'+cloudUser.id)
+    .on('postgres_changes',{
+      event:'*',schema:'public',table:'stockopname_sja2_data'
+    },async ()=>{
+      const {data:latest,error:readError}=await cloudClient
+        .from('stockopname_sja2_data').select('rows')
+        .eq('id','shared').maybeSingle();
+      if(readError){console.error('Gagal menerima pembaruan realtime:',readError);return;}
+      if(latest && Array.isArray(latest.rows)){
+        rows=latest.rows;
+        rows.forEach(r=>calculateMinMax(r));
+        render();
+      }
+    }).subscribe(status=>{
+      if(status==='CHANNEL_ERROR') console.error('Realtime gagal: periksa publikasi Realtime dan izin RLS tabel.');
+    });
+
+  const {data,error}=await cloudClient
+    .from('stockopname_sja2_data')
+    .select('rows')
+    .eq('id','shared')
+    .maybeSingle();
+
+  if(error) throw error;
+
+  // Sumber data hanya Supabase. Tidak membaca atau menggabungkan data browser.
+  if(data && Array.isArray(data.rows)){
+    rows=data.rows;
+    // Hitung ulang Min-Max untuk data yang sudah ada di Supabase; tidak perlu impor ulang.
+    rows.forEach(r=>calculateMinMax(r));
+  }else{
+    rows=[];
+    const {error:createError}=await cloudClient
+      .from('stockopname_sja2_data')
+      .upsert({id:'shared',rows:[],updated_at:new Date().toISOString()},{onConflict:'id'});
+    if(createError) throw createError;
+  }
+  await loadCloudImportDate();
+  render();
+};
+
+let scanStream=null,scanTimer=null,scanTarget='',zxingReader=null,zxingControls=null,scanBusy=false;
+function matchBarcode(code){code=String(code||'').trim();if(!code)return false;const found=rows.find(r=>String(r['Part']??'').trim().toLowerCase()===code.toLowerCase());if(found){$(scanTarget).value=String(found['Part']??'');$('scanStatus').textContent='Part ditemukan: '+found['Part'];window.stopScan();if(scanTarget==='quickSearch'){$('quickSearch').dispatchEvent(new Event('input',{bubbles:true}));$('quickSearch').focus()}else if(scanTarget==='part')$('loc').focus();else $('physicalQty').focus();return true}$('scanStatus').textContent='Kode terbaca: '+code+' — tidak cocok dengan kolom Part. Arahkan ke barcode nomor Part.';return false}
+window.stopScan=()=>{if(scanTimer){clearTimeout(scanTimer);scanTimer=null}if(zxingControls){try{zxingControls.stop()}catch(e){}zxingControls=null}if(zxingReader){try{zxingReader.reset()}catch(e){}zxingReader=null}if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}$('scanVideo').srcObject=null;$('scanModal').hidden=true;scanBusy=false};
+window.startScan=async target=>{
+ window.stopScan();scanTarget=target;$('scanModal').hidden=false;$('scanStatus').textContent='Meminta akses kamera belakang…';
+ if(!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){$('scanStatus').textContent='Akses kamera langsung diblokir oleh konteks file lokal (content://). Untuk scan otomatis, buka aplikasi dari HTTPS atau Android WebView yang memberi izin kamera. Tidak perlu memfoto; pemindai menunggu akses kamera langsung.';return}
+ try{
+  try{scanStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}})}
+  catch(firstError){scanStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'environment'}})}
+  const video=$('scanVideo');video.srcObject=scanStream;video.setAttribute('playsinline','');video.muted=true;await video.play();
+  // Prefer the browser's native detector with every format it reports as supported.
+  let detector=null;
+  if('BarcodeDetector' in window){try{const supported=await BarcodeDetector.getSupportedFormats();const wanted=supported.filter(f=>['aztec','code_128','code_39','code_93','codabar','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e','maxicode','rss_14','rss_expanded','unknown'].includes(f));detector=new BarcodeDetector({formats:wanted.length?wanted:supported})}catch(e){try{detector=new BarcodeDetector()}catch(e2){detector=null}}}
+  if(detector){$('scanStatus').textContent='Kamera aktif — pemindaian otomatis semua format yang didukung browser.';const scan=async()=>{if($('scanModal').hidden||!scanStream||scanBusy)return;try{if(video.readyState>=2){const codes=await detector.detect(video);for(const item of codes){if(matchBarcode(item.rawValue))return}}}catch(e){}scanTimer=setTimeout(scan,180)};scan();}
+  else if(window.ZXing && window.ZXing.BrowserMultiFormatReader){$('scanStatus').textContent='Kamera aktif — pemindai multi-format otomatis (barcode dan QR code).';zxingReader=new ZXing.BrowserMultiFormatReader();zxingControls=await zxingReader.decodeFromVideoElement(video,(result,err)=>{if(result){const text=result.getText();if(matchBarcode(text))return;}});}
+  else {$('scanStatus').textContent='Kamera terbuka, tetapi pustaka pemindai belum termuat. Periksa koneksi internet lalu buka ulang aplikasi.'}
+ }catch(e){if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}$('scanVideo').srcObject=null;const n=e&&e.name;if(n==='NotAllowedError'||n==='PermissionDeniedError')$('scanStatus').textContent='Chrome atau sistem menolak akses kamera. Karena file dibuka dari content://, jalankan aplikasi melalui HTTPS atau Android WebView dengan izin kamera.';else if(n==='NotFoundError'||n==='DevicesNotFoundError')$('scanStatus').textContent='Kamera tidak ditemukan pada perangkat.';else if(n==='NotReadableError'||n==='TrackStartError')$('scanStatus').textContent='Kamera sedang digunakan aplikasi lain. Tutup aplikasi kamera lain lalu coba kembali.';else $('scanStatus').textContent='Kamera gagal dibuka ('+(n||'kesalahan tidak diketahui')+'). Jika file dibuka dari content://, gunakan HTTPS atau Android WebView berizin kamera.'}
+};
+function headerIndex(name){return HEADERS.findIndex(h=>h===name)}
+function val(r,name){return r[name]??''}
+function num(v){if(v===null||v===undefined||String(v).trim()==='')return null;const n=Number(String(v).replace(/,/g,''));return Number.isFinite(n)?n:null}
+function dateValue(v){if(!v)return null;const d=new Date(v);return Number.isNaN(d.getTime())?null:d}
+function calculateMinMax(r){
+ const stock=num(r['Available Qty'])??num(r['On Hand Qty'])??0;
+ const rate=Math.max(0,num(r['Estimasi Pemakaian/Hari'])??0);
+ const ltRaw=num(r['Move Lead Time']); const lead=(ltRaw!==null&&ltRaw>0&&ltRaw<=365)?ltRaw:7;
+ const hasRate=rate>0; const safety=Math.max(hasRate?1:0,Math.ceil(rate*Math.max(3,lead*.5)));
+ const min=Math.max(0,Math.ceil(rate*lead+safety));
+ const max=Math.max(min,Math.ceil(min+rate*7));
+ r['MIN Rekomendasi']=min; r['MAX Rekomendasi']=max;
+ r['Saran Pengadaan']=Math.max(0,Math.ceil(max-stock));
+ r['Status Min-Max']=!hasRate?'BELUM DAPAT DINILAI':stock<=min?'KRITIS':stock<=min+Math.max(1,Math.ceil(min*.25))?'WASPADA':'AMAN';
+ r['Keyakinan Estimasi']=hasRate?'Awal / terbatas — perubahan bersih antar-impor':'Rendah — belum terukur pemakaian';
+}
+function updateMinMaxForImport(incoming, oldRows, importTime){
+ const prevMap=new Map(); for(const old of oldRows){const k=String(old['Part']??'').trim().toLowerCase();if(k&&!prevMap.has(k))prevMap.set(k,old)}
+ const previousImport=dateValue(localStorage.getItem(IMPORT_DATE_KEY));
+ const elapsed=previousImport?Math.max(1,(importTime-previousImport)/86400000):null;
+ for(const r of incoming){const old=prevMap.get(String(r['Part']??'').trim().toLowerCase());
+  r['Tanggal Impor Terakhir']=importTime.toISOString();
+  if(old){const oldStock=num(old['On Hand Qty']); const newStock=num(r['On Hand Qty']);r['Stok Sebelum Impor']=oldStock??'';
+   let priorRate=num(old['Estimasi Pemakaian/Hari'])??0;
+   if(oldStock!==null&&newStock!==null&&elapsed&&oldStock>newStock){const observed=(oldStock-newStock)/elapsed; r['Estimasi Pemakaian/Hari']=Math.max(0,priorRate>0?(priorRate*.5+observed*.5):observed)}else r['Estimasi Pemakaian/Hari']=priorRate;
+  }else{r['Stok Sebelum Impor']='';r['Estimasi Pemakaian/Hari']=num(r['Estimasi Pemakaian/Hari'])??0;}
+  calculateMinMax(r);
+ }
+}
+function daysSinceActivity(r){const d=dateValue(r['Last Activity Date']);return d?Math.floor((Date.now()-d.getTime())/86400000):null}
+function getMinMaxCritical(){return rows.filter(r=>r['Status Min-Max']==='KRITIS')}
+function getMinMaxReview(){return rows.filter(r=>String(r['Keyakinan Estimasi']||'').startsWith('Rendah'))}
+function getSlowMove(){return rows.filter(r=>(daysSinceActivity(r)??-1)>180)}
+function showMinMaxList(title,list){$('auditModalTitle').textContent=title;$('auditModalNote').textContent=list.length+' barang. Angka Min-Max adalah estimasi untuk membantu pemeriksaan, bukan keputusan pengadaan otomatis.';$('auditList').innerHTML=list.length?list.map(r=>{const idx=rows.indexOf(r);return '<div class="audit-item" role="button" tabindex="0" data-audit-index="'+idx+'" data-audit-target="physical"><strong>'+esc(r['Part']||'Tanpa kode Part')+' · '+esc(r['Status Min-Max']||'PERIKSA')+'</strong><span>'+esc(r['Part Description']||'')+'</span><span>Stok tersedia: '+esc(r['Available Qty']||r['On Hand Qty']||0)+' · MIN '+esc(r['MIN Rekomendasi']??0)+' · MAX '+esc(r['MAX Rekomendasi']??0)+' · Saran: '+esc(r['Saran Pengadaan']??0)+'</span><span>'+esc(r['Keyakinan Estimasi']||'Data belum cukup')+'</span></div>'}).join(''):'<div class="audit-empty">Tidak ada barang dalam kategori ini.</div>';$('auditModal').hidden=false}
+function renderMinMaxResults(){
+ const body=$('minmaxResultsBody');
+ if(!rows.length){$('minmaxResultsCount').textContent='Belum ada data';body.innerHTML='<tr><td colspan="10" class="small">Belum ada data stok yang berhasil dimuat dari Supabase. Pastikan login dan data tersimpan pada rekaman id=shared di stockopname_sja2_data.</td></tr>';return;}
+ const q=$('quickSearch').value.trim().toLowerCase();
+ const list=rows.filter(r=>!q||String(r['Part']||'').toLowerCase().includes(q)||String(r['Part Description']||'').toLowerCase().includes(q));
+ $('minmaxResultsCount').textContent=list.length.toLocaleString('id-ID')+' part ditampilkan';
+ body.innerHTML=list.map(r=>{
+  const stock=num(r['Available Qty'])??num(r['On Hand Qty'])??0;
+  const ltRaw=num(r['Move Lead Time']);const assumed=!(ltRaw!==null&&ltRaw>0&&ltRaw<=365);
+  const lt=assumed?7:ltRaw;
+  const rate=num(r['Estimasi Pemakaian/Hari'])??0;
+  // Tanpa estimasi pemakaian positif, status aman/kritis belum bisa disimpulkan.
+  const status=rate>0?String(r['Status Min-Max']||'PERIKSA'):'BELUM DAPAT DINILAI';
+  const confidence=String(r['Keyakinan Estimasi']||'Data belum cukup');
+  const statusClass=status==='KRITIS'?'mm-critical':status==='WASPADA'?'mm-warning':status==='BELUM DAPAT DINILAI'?'mm-neutral':'mm-safe';
+  return '<tr><td><strong>'+esc(r['Part']||'—')+'</strong></td><td>'+esc(r['Part Description']||'—')+'</td><td>'+esc(stock.toLocaleString('id-ID'))+'</td><td>'+esc(rate.toLocaleString('id-ID'))+'</td><td>'+esc(lt.toLocaleString('id-ID'))+' hari'+(assumed?' <span class="mm-assumption">Asumsi</span>':'')+'</td><td>'+esc(r['MIN Rekomendasi']??'—')+'</td><td>'+esc(r['MAX Rekomendasi']??'—')+'</td><td>'+esc(r['Saran Pengadaan']??'—')+'</td><td><span class="mm-status '+statusClass+'">'+esc(status)+'</span></td><td>'+esc(confidence)+'</td></tr>';
+ }).join('')||'<tr><td colspan="10" class="small">Tidak ada part yang cocok dengan pencarian.</td></tr>';
+}
+function render(){let q=$('quickSearch').value.trim().toLowerCase(), shown=rows.filter(r=>!q||Object.values(r).join(' ').toLowerCase().includes(q));renderMinMaxResults();
+const DISPLAY_HEADERS=HEADERS.flatMap(h=>h==='Order Qty'?[h,'Stok Fisik (Opname)','Nomor Rak']:[h]);
+$('thead').innerHTML='<tr>'+DISPLAY_HEADERS.map(h=>'<th>'+esc(h)+'</th>').join('')+'<th class="no-print">Aksi</th></tr>';
+$('tbody').innerHTML=shown.map((r)=>{let idx=rows.indexOf(r);return '<tr class="'+(idx===selectedRowIndex?'row-selected':'')+'" onclick="showDetails('+idx+')" title="Tekan baris untuk memilih barang">'+DISPLAY_HEADERS.map(h=>'<td>'+esc(r[h])+'</td>').join('')+'<td class="no-print"><button onclick="event.stopPropagation();editLoc('+idx+')">Edit</button> <button style="background:#a83232" onclick="event.stopPropagation();delRow('+idx+')">Hapus</button></td></tr>'}).join('');
+$('count').textContent=shown.length+' dari '+rows.length+' baris';refreshAuditSummary()}
+function getMissingRack(){return rows.filter(r=>!String(r['Nomor Rak']??'').trim())}
+function getEmptyRackRows(){return emptyRackItems.slice().sort((a,b)=>String(a['Nomor Rak']??'').localeCompare(String(b['Nomor Rak']??''),'id',{numeric:true,sensitivity:'base'})||String(a['Part']??'').localeCompare(String(b['Part']??''),'id',{numeric:true,sensitivity:'base'}))}
+function getVarianceRows(){return rows.filter(r=>{const a=r['On Hand Qty']??r['Order Qty']??'',b=r['Stok Fisik (Opname)']??'';return a!==''&&b!==''&&Number.isFinite(Number(a))&&Number.isFinite(Number(b))&&Number(b)!==Number(a)})}
+function refreshAuditSummary(){const missing=getMissingRack(),variance=getVarianceRows(),empty=getEmptyRackRows();$('missingRackCount').textContent=missing.length.toLocaleString('id-ID');$('varianceCount').textContent=variance.length.toLocaleString('id-ID');$('emptyRackCount').textContent=empty.length.toLocaleString('id-ID');$('minmaxCriticalCount').textContent=getMinMaxCritical().length.toLocaleString('id-ID');$('minmaxReviewCount').textContent=getMinMaxReview().length.toLocaleString('id-ID');$('slowMoveCount').textContent=getSlowMove().length.toLocaleString('id-ID')}
+function openAuditList(type){const list=type==='rack'?getMissingRack():type==='empty'?getEmptyRackRows():getVarianceRows();$('auditModalTitle').textContent=type==='rack'?'Barang Belum Memiliki Nomor Rak':type==='empty'?'Daftar Rak Kosong dari Perbandingan Impor':'Barang dengan Selisih Stok';$('auditModalNote').textContent=list.length+' rak · '+(type==='empty'?'Rak lama yang Part-nya tidak ditemukan pada file impor terbaru, diurutkan berdasarkan nomor rak.':'Ketuk barang untuk langsung mengisi '+(type==='rack'?'Nomor Rak':'Stok Fisik'));$('auditList').innerHTML=list.length?list.map(r=>{const idx=rows.indexOf(r),part=String(r['Part']||'Tanpa kode Part'),desc=String(r['Part Description']||'Deskripsi tidak tersedia');if(type==='empty')return '<div class="audit-item"><strong>Rak '+esc(r['Nomor Rak'])+' · '+esc(part)+'</strong><span>'+esc(desc)+'</span><span>Stok sebelumnya: '+esc(r['Previous On Hand Qty']??'—')+' · Tidak ditemukan pada impor terbaru</span></div>';if(type==='rack')return '<div class="audit-item" role="button" tabindex="0" data-audit-index="'+idx+'" data-audit-target="rack" title="Ketuk untuk mengisi Nomor Rak"><strong>'+esc(part)+'</strong><span>'+esc(desc)+'</span><span>Ketuk untuk edit Nomor Rak</span></div>';const system=Number(r['On Hand Qty']??r['Order Qty']),physical=Number(r['Stok Fisik (Opname)']),diff=physical-system;return '<div class="audit-item" role="button" tabindex="0" data-audit-index="'+idx+'" data-audit-target="physical" title="Ketuk untuk mengisi Stok Fisik"><strong>'+esc(part)+' · Selisih: '+esc(diff.toLocaleString('id-ID'))+'</strong><span>'+esc(desc)+'</span><span>Stok sistem: '+esc(system)+' · Stok fisik: '+esc(physical)+'</span><span>Ketuk untuk edit Stok Fisik</span></div>'}).join(''):'<div class="audit-empty">Tidak ada barang dalam kategori ini.</div>';$('auditModal').hidden=false}
+$('minmaxCriticalCard').addEventListener('click',()=>showMinMaxList('Stok mencapai / di bawah MIN',getMinMaxCritical()));$('minmaxReviewCard').addEventListener('click',()=>showMinMaxList('Data Min-Max perlu ditinjau',getMinMaxReview()));$('slowMoveCard').addEventListener('click',()=>showMinMaxList('Aktivitas terakhir lebih dari 180 hari',getSlowMove()));
+$('missingRackCard').addEventListener('click',()=>openAuditList('rack'));$('varianceCard').addEventListener('click',()=>openAuditList('variance'));$('emptyRackCard').addEventListener('click',()=>openAuditList('empty'));$('closeAuditModal').addEventListener('click',()=>$('auditModal').hidden=true);$('auditModal').addEventListener('click',e=>{if(e.target===$('auditModal'))$('auditModal').hidden=true});
+function openAuditItem(item){const idx=Number(item.dataset.auditIndex),target=item.dataset.auditTarget;if(!Number.isInteger(idx)||!rows[idx])return;$('auditModal').hidden=true;window.showDetails(idx,true);const input=$(target==='rack'?'loc':'physicalQty');input.scrollIntoView({behavior:'smooth',block:'center'});input.focus({preventScroll:true});input.select?.()}
+$('auditList').addEventListener('click',e=>{const item=e.target.closest('[data-audit-index]');if(item)openAuditItem(item)});$('auditList').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-audit-index]')){e.preventDefault();openAuditItem(e.target)}});
+let selectedRowIndex=-1;
+function updateSelectedItem(r){if(!r)return;$('selectedPartLabel').textContent=r['Part']||'Tanpa kode Part';$('selectedDescLabel').textContent=r['Part Description']||'Deskripsi tidak tersedia';const stock=r['On Hand Qty']??r['Order Qty']??'';$('selectedStockLabel').textContent='Stok sistem: '+(stock!==''?stock:'—');$('currentRackLabel').textContent=r['Nomor Rak']||'Belum diisi';const physical=r['Stok Fisik (Opname)'];$('currentPhysicalLabel').textContent=physical!==undefined&&physical!==''?physical:'Belum diinput'}
+window.showDetails=(i,quiet=false)=>{let r=rows[i];if(!r)return;selectedRowIndex=i;updateSelectedItem(r);/* Pilih baris mengisi otomatis form koreksi nomor rak dan stok fisik. */$('part').value=r['Part']||'';$('loc').value=r['Nomor Rak']||'';$('physicalPart').value=r['Part']||'';$('physicalQty').value=(r['Stok Fisik (Opname)']??'');let systemRaw=r['On Hand Qty']??r['Order Qty']??'';let physicalRaw=r['Stok Fisik (Opname)']??'';let rack=r['Nomor Rak']??'';let system=Number(systemRaw),physical=Number(physicalRaw);let hasSystem=systemRaw!==''&&Number.isFinite(system),hasPhysical=physicalRaw!==''&&Number.isFinite(physical);let variance=hasSystem&&hasPhysical?physical-system:null;$('detailContent').innerHTML=[['Kode Part',r['Part']||'—'],['Deskripsi',r['Part Description']||'—'],['Stok Sistem',hasSystem?systemRaw:'Belum tersedia'],['Stok Fisik',hasPhysical?physicalRaw:'Belum diinput'],['Selisih (Fisik − Sistem)',variance===null?'Belum dapat dihitung':variance.toLocaleString('id-ID'),],['Nomor Rak',rack||'Belum diisi'],['Hasil Pemeriksaan',!hasPhysical?'Menunggu input stok fisik':!hasSystem?'Stok sistem tidak tersedia':variance===0?'Sesuai':variance<0?'Stok fisik kurang':'Stok fisik lebih']].map(([k,v])=>'<div class="detail-item"><b>'+esc(k)+'</b><span>'+esc(v)+'</span></div>').join('');$('detailPanel').hidden=false;if(!quiet)$('detailPanel').scrollIntoView({behavior:'smooth',block:'nearest'});render()};
+window.editLoc=i=>{let r=rows[i];$('part').value=r['Part']||'';$('loc').value=r['Nomor Rak']||'';window.scrollTo({top:0,behavior:'smooth'})};
+window.delRow=i=>{if(confirm('Hapus baris stok ini?')){rows.splice(i,1);persist()}};
+$('saveRack').onclick=()=>{let p=$('part').value.trim(),loc=$('loc').value.trim();if(!p||!loc){alert('Isi Part dan Nomor Rak.');return}let r=rows.find(x=>String(x['Part']??'').trim().toLowerCase()===p.toLowerCase());if(!r){alert('Part tidak ditemukan. Impor file stok perusahaan terlebih dahulu.');return}r['Nomor Rak']=loc;persist();updateSelectedItem(r)};
+$('savePhysical').onclick=()=>{let p=$('physicalPart').value.trim(),qty=$('physicalQty').value;if(!p||qty===''||!Number.isFinite(Number(qty))||Number(qty)<0){alert('Isi kode Part dan jumlah stok fisik yang valid.');return}let r=rows.find(x=>String(x['Part']??'').trim().toLowerCase()===p.toLowerCase());if(!r){alert('Part tidak ditemukan. Impor file stok perusahaan terlebih dahulu.');return}r['Stok Fisik (Opname)']=Number(qty);persist();/* Segarkan detail barang langsung setelah simpan, tanpa perlu klik baris lagi. */window.showDetails(rows.indexOf(r));};
+// Satu kolom pencarian di bagian paling atas: memfilter tabel dan otomatis memilih baris jika nomor Part cocok persis.
+$('quickSearch').addEventListener('focus',()=>{$('quickSearch').select()});
+$('quickSearch').oninput=()=>{
+  const q=$('quickSearch').value.trim().toLowerCase(), box=$('quickResults');
+  if(!q){box.hidden=true;box.innerHTML='';selectedRowIndex=-1;render();return}
+  const exact=rows.findIndex(r=>String(r['Part']??'').trim().toLowerCase()===q);
+  if(exact>=0){box.hidden=true;box.innerHTML='';window.showDetails(exact,true);render();return}
+  const matches=rows.map((r,i)=>({r,i})).filter(({r})=>String(r['Part']??'').toLowerCase().includes(q)||String(r['Part Description']??'').toLowerCase().includes(q)||String(r['Location No']??'').toLowerCase().includes(q)).slice(0,30);
+  render();
+  if(!matches.length){box.innerHTML='<div class="small">Barang tidak ditemukan. Periksa nomor Part.</div>';box.hidden=false;return}
+  box.innerHTML=matches.map(({r,i})=>'<button type="button" class="quick-result" data-row="'+i+'"><strong>'+esc(r['Part']||'Tanpa kode Part')+'</strong><span>'+esc(r['Part Description']||'')+(r['Location No']?' · Lokasi: '+esc(r['Location No']):'')+'</span></button>').join('');box.hidden=false;
+};
+$('quickResults').addEventListener('click',e=>{const b=e.target.closest('button[data-row]');if(!b)return;const i=Number(b.dataset.row),r=rows[i];if(!r)return;$('quickSearch').value=String(r['Part']||'').trim();window.showDetails(i,true);$('quickResults').hidden=true;$('quickResults').innerHTML='';render();});
+$('import').onclick=()=>$('file').click();
+$('file').onchange=async e=>{if(!cloudUser){alert('Login terlebih dahulu sebelum mengimpor.');e.target.value='';return}let f=e.target.files[0];if(!f)return;if(!window.XLSX){alert('Pustaka Excel perlu koneksi internet.');return}try{let wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});if(!data.length)throw Error('Tidak ada data.');let keys=Object.keys(data[0]);if(!keys.includes('Part')||!keys.includes('Part Description'))throw Error('Judul kolom tidak cocok. Pastikan file memiliki kolom Part dan Part Description seperti file perusahaan.');
+// Simpan hasil inputan manual berdasarkan Part sebelum data perusahaan diganti/digabung.
+const manualByPart=new Map();
+for(const old of rows){const key=String(old['Part']??'').trim().toLowerCase();if(!key)continue;const prev=manualByPart.get(key)||{};const rack=String(old['Nomor Rak']??'').trim();const physical=old['Stok Fisik (Opname)'];if(rack)prev.rack=rack;if(physical!==undefined&&physical!==''&&physical!==null)prev.physical=physical;manualByPart.set(key,prev)}
+let incoming=data.map(d=>{let r={};HEADERS.forEach(h=>r[h]=d[h]??'');const key=String(r['Part']??'').trim().toLowerCase();const saved=manualByPart.get(key)||{};r['Nomor Rak']=saved.rack||String(d['Nomor Rak']??'').trim();if(saved.physical!==undefined)r['Stok Fisik (Opname)']=saved.physical;return r});
+const importTime=new Date(); updateMinMaxForImport(incoming,rows.slice(),importTime);
+// Deteksi rak kosong dengan membandingkan Part dari data lama dengan file impor TERBARU.
+// Jika Part lama tidak ditemukan di file baru dan punya Nomor Rak, tandai raknya kosong.
+const latestPartSet=new Set(incoming.map(r=>String(r['Part']??'').trim().toLowerCase()).filter(Boolean));
+const previousEmptyMap=new Map(getEmptyRackRows().map(r=>[String(r['Part']??'').trim().toLowerCase()+'|'+String(r['Nomor Rak']??'').trim().toLowerCase(),r]));
+const newlyEmpty=[];
+for(const old of rows){
+ const part=String(old['Part']??'').trim(),key=part.toLowerCase(),rack=String(old['Nomor Rak']??'').trim();
+ if(part&&rack&&!latestPartSet.has(key)){
+  const id=key+'|'+rack.toLowerCase();
+  const prior=previousEmptyMap.get(id);
+  newlyEmpty.push({Part:part,'Part Description':old['Part Description']||'','Nomor Rak':rack,'Previous On Hand Qty':old['On Hand Qty']??old['Order Qty']??'', 'Location No':old['Location No']||'', detected_at:new Date().toISOString(), ...(prior||{})});
+ }
+}
+// Pertahankan catatan rak kosong yang Part-nya masih tidak ada di impor terbaru.
+const retained=getEmptyRackRows().filter(r=>!latestPartSet.has(String(r['Part']??'').trim().toLowerCase()));
+const combined=new Map();[...retained,...newlyEmpty].forEach(r=>combined.set(String(r['Part']??'').trim().toLowerCase()+'|'+String(r['Nomor Rak']??'').trim().toLowerCase(),r));
+emptyRackItems=[...combined.values()];
+let merge=confirm('Ditemukan '+incoming.length+' baris. OK = gabungkan/perbarui berdasarkan Part + Location No. Batal = ganti seluruh data. Nomor rak dan stok fisik inputan lama untuk Part yang sama tetap dipertahankan. Rak dari data sebelumnya yang Part-nya tidak ditemukan di impor terbaru akan ditandai kosong.');
+if(merge){let map=new Map(rows.map(r=>[String(r['Part'])+'|'+String(r['Location No']),r]));for(let r of incoming){let k=String(r['Part'])+'|'+String(r['Location No']);if(map.has(k)){let existing=map.get(k);const savedRack=String(existing['Nomor Rak']??'').trim(),savedPhysical=existing['Stok Fisik (Opname)'];Object.assign(existing,r);existing['Nomor Rak']=savedRack||String(r['Nomor Rak']??'').trim();if(savedPhysical!==undefined&&savedPhysical!=='')existing['Stok Fisik (Opname)']=savedPhysical;}else{rows.push(r);map.set(k,r)}}}else{if(!confirm('Yakin mengganti seluruh data? Data perusahaan saat ini akan diganti. Nomor rak dan stok fisik inputan lama untuk Part yang sama tetap dipertahankan.'))return;rows=incoming}
+persist();await saveEmptyRackItems();await saveImportDate();render();alert('Berhasil memproses '+incoming.length+' baris. '+emptyRackItems.length+' nomor rak terdeteksi kosong berdasarkan perbandingan impor terbaru.')}catch(err){alert('Gagal impor: '+err.message)}finally{e.target.value=''}};
+function download(rowsOut,name){if(!window.XLSX){alert('Pustaka Excel perlu koneksi internet.');return}let wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(rowsOut);ws['!cols']=rowsOut[0].map(h=>({wch:Math.min(28,Math.max(12,String(h).length+2))}));XLSX.utils.book_append_sheet(wb,ws,'Stok Perusahaan');XLSX.writeFile(wb,name)}
+const EXPORT_HEADERS=HEADERS.flatMap(h=>h==='Order Qty'?[h,'Stok Fisik (Opname)','Nomor Rak']:[h]);
+$('export').onclick=()=>download([EXPORT_HEADERS,...rows.map(r=>EXPORT_HEADERS.map(h=>r[h]??''))],'Stok_Gudang_Sparepart.xlsx');
+
+$('clear').onclick=async()=>{if(!cloudUser){alert('Login terlebih dahulu.');return}if(!confirm('HAPUS SELURUH DATA STOK DI SUPABASE untuk semua pengguna? Tindakan ini tidak dapat dibatalkan.'))return;const {error}=await cloudClient.from('stockopname_sja2_data').upsert({id:'shared',rows:[],updated_at:new Date().toISOString()},{onConflict:'id'});if(error){alert('Gagal menghapus data cloud: '+error.message);return}rows=[];render();alert('Data stok cloud telah dikosongkan.')};
+load();loadImportDate();
+</script>
+
+
+<style id="stockAccountAndThemeStyles">
+.stock-account-bar{display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid #ffffff30}
+.stock-account-trigger{max-width:min(100%,520px);overflow-wrap:anywhere;background:rgba(255,255,255,.13)!important;color:#fff!important;border:1px solid rgba(255,255,255,.45)!important;box-shadow:none!important;border-radius:12px!important;padding:10px 15px!important;text-align:left;font-weight:750}
+.stock-account-trigger:hover{background:rgba(255,255,255,.22)!important}
+.stock-account-modal{position:fixed;inset:0;z-index:100010;background:rgba(8,20,18,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.stock-account-modal[hidden]{display:none}.stock-account-card{width:min(440px,100%);background:var(--panel,#fff);color:var(--ink,#172b3a);border-radius:18px;padding:22px;box-shadow:0 24px 80px #0005;border:1px solid var(--line,#d8e1e8)}
+.stock-account-card h2{font-size:20px;margin:0 0 4px}.stock-account-email{color:var(--muted,#647586);font-size:13px;overflow-wrap:anywhere;margin:0 0 18px}
+.stock-account-menu{display:grid;gap:9px}.stock-account-menu button{width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stock-account-menu button.alt{background:#f0f5f3;color:#285b49}.stock-account-form{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line,#d8e1e8)}.stock-account-form.active{display:block}.stock-account-form label{display:block;font-weight:650;margin:10px 0 5px}.stock-account-form input{width:100%}.stock-account-message{font-size:13px;min-height:18px;margin:10px 0;color:var(--muted,#647586);overflow-wrap:anywhere}.stock-account-footer{display:flex;justify-content:flex-end;margin-top:16px}
+body.stock-night{--bg:#101820;--panel:#18242d;--ink:#e6edf2;--muted:#a6b5c0;--line:#354650;--accent:#263e38;background:#101820!important;color:#e6edf2}
+body.stock-night main{color:var(--ink)}body.stock-night .panel,body.stock-night .stock-account-card,body.stock-night .audit-modal-card,body.stock-night .scan-card{background:#18242d!important;color:#e6edf2!important;border-color:#354650!important}
+body.stock-night .panel h3,body.stock-night .item-code,body.stock-night .item-desc,body.stock-night .detail-item span{color:#e6edf2!important}
+body.stock-night input,body.stock-night select,body.stock-night textarea{background:#101820!important;color:#e6edf2!important;border-color:#465963!important}
+body.stock-night table{background:#18242d!important;color:#e6edf2}body.stock-night th{background:#263a43!important;color:#d8e8e3!important}body.stock-night td{border-color:#34434c!important}body.stock-night tbody tr:nth-child(even){background:#1e2c35!important}body.stock-night tbody tr:hover{background:#2a4138!important}
+body.stock-night .detail-item,body.stock-night .quick-result,body.stock-night .audit-item{background:#202f38!important;color:#e6edf2!important;border-color:#3a4b54!important}body.stock-night .small,body.stock-night .quick-result span,body.stock-night .audit-item span{color:#a6b5c0!important}
+body.stock-night .stock-account-menu button.alt,body.stock-night button.alt{background:#263b36!important;color:#d7eee4!important;border-color:#40584e!important}
+</style>
+<div id="stockAccountModal" class="stock-account-modal" hidden role="dialog" aria-modal="true" aria-labelledby="stockAccountTitle">
+ <div class="stock-account-card">
+  <h2 id="stockAccountTitle">Pengaturan Akun</h2><p id="stockAccountEmail" class="stock-account-email"></p>
+  <div class="stock-account-menu">
+   <button type="button" id="stockChangePasswordBtn">🔐 Ubah Kata Sandi <span>›</span></button>
+   <button type="button" id="stockThemeBtn" class="alt">🌙 Aktifkan Mode Night <span>›</span></button>
+  </div>
+  <form id="stockChangePasswordForm" class="stock-account-form">
+   <label for="stockNewPassword">Kata sandi baru</label><input id="stockNewPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" required>
+   <label for="stockConfirmPassword">Ulangi kata sandi baru</label><input id="stockConfirmPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Ketik ulang kata sandi" required>
+   <div id="stockPasswordMessage" class="stock-account-message" role="status"></div>
+   <div class="actions"><button type="submit">Simpan Kata Sandi</button><button type="button" class="alt" id="stockCancelPasswordBtn">Batal</button></div>
+  </form>
+  <div class="stock-account-footer"><button type="button" class="alt" id="stockCloseAccountModal">Tutup</button><button type="button" id="stockLogoutMenuBtn" style="background:#a62d35;border-color:#a62d35;width:100%;margin-top:10px">↪ Log Out</button></div>
+ </div>
+</div>
+<script>
+(()=>{
+ const modal=document.getElementById('stockAccountModal'),emailEl=document.getElementById('stockAccountEmail'),form=document.getElementById('stockChangePasswordForm'),msg=document.getElementById('stockPasswordMessage'),themeBtn=document.getElementById('stockThemeBtn');
+ const applyTheme=night=>{document.body.classList.toggle('stock-night',night);try{localStorage.setItem('stockopname-sja2-theme',night?'night':'light')}catch(_){}themeBtn.innerHTML=night?'☀️ Aktifkan Mode Light <span>›</span>':'🌙 Aktifkan Mode Night <span>›</span>';};
+ try{applyTheme(localStorage.getItem('stockopname-sja2-theme')==='night')}catch(_){applyTheme(false)}
+ window.openStockAccountMenu=function(){const u=window.cloudUser;emailEl.textContent=u?.email||'Akun yang sedang digunakan';modal.hidden=false;form.classList.remove('active');msg.textContent='';document.getElementById('stockNewPassword').value='';document.getElementById('stockConfirmPassword').value='';};
+ const close=()=>{modal.hidden=true;form.classList.remove('active')};
+ document.getElementById('stockCloseAccountModal').addEventListener('click',close);modal.addEventListener('click',e=>{if(e.target===modal)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close()});
+ document.getElementById('stockChangePasswordBtn').addEventListener('click',()=>{form.classList.add('active');document.getElementById('stockNewPassword').focus()});
+ document.getElementById('stockCancelPasswordBtn').addEventListener('click',()=>{form.classList.remove('active');msg.textContent=''});
+ themeBtn.addEventListener('click',()=>applyTheme(!document.body.classList.contains('stock-night')));
+ document.getElementById('stockLogoutMenuBtn').addEventListener('click',async()=>{if(confirm('Log out dari akun ini?')){close();await logoutStockopname()}});
+ form.addEventListener('submit',async e=>{e.preventDefault();const a=document.getElementById('stockNewPassword').value,b=document.getElementById('stockConfirmPassword').value;msg.style.color='var(--muted)';if(a.length<6){msg.textContent='Kata sandi minimal 6 karakter.';return}if(a!==b){msg.style.color='#c33';msg.textContent='Kedua kata sandi belum sama.';return}const submit=form.querySelector('button[type=submit]');submit.disabled=true;submit.textContent='Menyimpan…';try{const {error}=await window.cloudClient.auth.updateUser({password:a});if(error)throw error;msg.style.color='#168257';msg.textContent='Kata sandi berhasil diubah.';document.getElementById('stockNewPassword').value='';document.getElementById('stockConfirmPassword').value='';}catch(err){msg.style.color='#c33';msg.textContent='Gagal mengubah kata sandi: '+(err.message||'Silakan coba lagi.')}finally{submit.disabled=false;submit.textContent='Simpan Kata Sandi'}});
+})();
+</script>
+
+<div id="loginGate" class="login-gate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form id="loginForm" class="login-card">
+    <div class="login-brand"><svg class="login-brand-mark" viewBox="0 0 64 64" role="img" aria-label="Logo profesional Gudang Sentral SJA2"><defs><linearGradient id="loginPremiumshield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fffc"/><stop offset="1" stop-color="#b8f0dc"/></linearGradient><linearGradient id="loginPremiummain" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22c58b"/><stop offset=".55" stop-color="#07845f"/><stop offset="1" stop-color="#064e49"/></linearGradient><linearGradient id="loginPremiumroof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4c4"/><stop offset="1" stop-color="#ffb84d"/></linearGradient></defs><path d="M32 2 59 17v30L32 62 5 47V17Z" fill="url(#loginPremiumshield)"/><path d="M32 7 53 19v25L32 56 11 44V19Z" fill="url(#loginPremiummain)"/><path d="m16 28 16-10 16 10v19H16Z" fill="#fff"/><path d="m13 28 19-12 19 12" fill="none" stroke="url(#loginPremiumroof)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 34h14v13H25z" fill="#075b4a"/><path d="M29 37h6v6h-6z" fill="#f8c45b"/><path d="M19 33h4v5h-4zM41 33h4v5h-4z" fill="#0c8a64"/><path d="M13 49h38" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="49" cy="14" r="5" fill="#ffca67" stroke="#fff" stroke-width="1.5"/></svg><div><div class="login-brand-title">STOCKOPNAME-SJA2</div><div class="login-brand-subtitle">Gudang Sentral SJA2</div></div></div>
+    <h2 id="loginTitle">Login Aplikasi</h2>
+    <label class="login-field" for="loginEmail">Email</label>
+    <input id="loginEmail" type="email" autocomplete="username" placeholder="Masukkan email" required>
+    <label class="login-field" for="loginPassword">Password</label>
+    <div class="password-wrap">
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+      <button id="togglePassword" class="alt" type="button" aria-pressed="false">Lihat</button>
+    </div>
+    <button class="login-submit" type="submit">Masuk</button>
+    <p id="loginError" class="login-error" role="alert"></p>
+  </form>
+</div>
+<script>
+(()=>{
+  const gate=document.getElementById('loginGate');
+  const form=document.getElementById('loginForm');
+  const email=document.getElementById('loginEmail');
+  const password=document.getElementById('loginPassword');
+  const toggle=document.getElementById('togglePassword');
+  const error=document.getElementById('loginError');
+  const SUPABASE_URL='https://wzjgipobfibavlzklviy.supabase.co';
+  const SUPABASE_KEY='sb_publishable_1a4jX8pD-_tsS0brSGTYZw_G3Gfqs9W';
+  if(!window.supabase || !window.supabase.createClient){error.textContent='Modul login tidak dapat dimuat. Periksa koneksi internet.';return;}
+  window.cloudClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  cloudClient=window.cloudClient;
+  toggle.addEventListener('click',()=>{const show=password.type==='password';password.type=show?'text':'password';toggle.textContent=show?'Sembunyikan':'Lihat';toggle.setAttribute('aria-pressed',String(show));});
+  function setBusy(b,msg){form.querySelectorAll('button').forEach(x=>x.disabled=b);if(msg)error.textContent=msg;}
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();error.style.color='#176b52';setBusy(true,'Memeriksa akun…');
+    try{
+      // Bersihkan sesi lokal lama agar login tidak memakai akun sebelumnya.
+      try{await cloudClient.auth.signOut({scope:'local'});}catch(_){}
+      try{for(const storage of [localStorage,sessionStorage])for(let i=storage.length-1;i>=0;i--){const key=storage.key(i);if(key&&(/^sb-.*-auth-token$/i.test(key)||/^supabase\.auth\.token$/i.test(key)))storage.removeItem(key);}}catch(_){}
+      const {error:loginError}=await cloudClient.auth.signInWithPassword({email:email.value.trim(),password:password.value});
+      if(loginError)throw loginError;
+      await window.initCloudSync();gate.remove();
+    }catch(e){console.error('Login/sinkronisasi gagal:',e);error.style.color='#b42318';error.textContent='Email atau kata sandi tidak benar, atau koneksi database bermasalah. '+(e.message||'');password.value='';password.focus();}
+    finally{setBusy(false);}
+  });
+  (async()=>{try{const {data:{session},error:e}=await cloudClient.auth.getSession();if(e)throw e;if(session){await window.initCloudSync();gate.remove();}}catch(e){console.warn('Pemeriksaan sesi:',e.message);}})();
+  email.focus();
+})();
+</script>
+<script>
+async function logoutStockopname(){
+  try{if(window.cloudClient?.auth)await window.cloudClient.auth.signOut({scope:'local'});}catch(e){console.warn('Sign out:',e?.message||e);}
+  try{for(const storage of [localStorage,sessionStorage])for(let i=storage.length-1;i>=0;i--){const key=storage.key(i);if(key&&(/^sb-.*-auth-token$/i.test(key)||/^supabase\.auth\.token$/i.test(key)))storage.removeItem(key);}}catch(_){}
+  window.cloudUser=null;window.location.reload();loadImportDate();
+}
+</script>
+<script>
+// Keluar otomatis setelah 30 menit tanpa aktivitas. Aktivitas mencakup sentuhan, klik, ketikan, gulir, dan gerakan pointer.
+(()=>{let idleTimer=null;const IDLE_LIMIT=30*60*1000;const activityEvents=['pointerdown','keydown','touchstart','scroll','mousemove'];async function logoutForIdle(){if(!window.cloudClient||!window.cloudUser)return;await logoutStockopname();alert('Anda keluar otomatis karena aplikasi tidak aktif selama 30 menit. Silakan Log In kembali.');}function resetIdleTimer(){if(!window.cloudUser)return;clearTimeout(idleTimer);idleTimer=setTimeout(logoutForIdle,IDLE_LIMIT)}activityEvents.forEach(ev=>document.addEventListener(ev,resetIdleTimer,{passive:true}));document.addEventListener('visibilitychange',()=>{if(!document.hidden)resetIdleTimer()});const originalInit=window.initCloudSync;window.initCloudSync=async function(){const result=await originalInit.apply(this,arguments);resetIdleTimer();return result};if(window.cloudClient){window.cloudClient.auth.onAuthStateChange((_event,session)=>{if(session){window.cloudUser=session.user;resetIdleTimer()}else{window.cloudUser=null;clearTimeout(idleTimer)}})}})();
+</script>
+
+
+
+</body></html>
